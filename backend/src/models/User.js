@@ -34,23 +34,24 @@ const userSchema = new mongoose.Schema(
       type: Boolean,
       default: true,
     },
+    bookmarks: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Post', // Change to your post/article model
+      },
+    ],
   },
   { timestamps: true }
 );
 
 // Hash password before saving
-userSchema.pre('save', async function (next) {
+userSchema.pre('save', async function () {
   if (!this.isModified('password')) {
-    return next();
+    return;
   }
 
-  try {
-    const hashedPassword = await bcryptjs.hash(this.password, 10);
-    this.password = hashedPassword;
-    next();
-  } catch (error) {
-    next(error);
-  }
+  const hashedPassword = await bcryptjs.hash(this.password, 10);
+  this.password = hashedPassword;
 });
 
 // Method to compare passwords

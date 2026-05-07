@@ -2,6 +2,8 @@ import express from 'express';
 import cors from 'cors';
 import { errorHandler, AppError } from './middleware/errorHandler.js';
 import { logger } from './middleware/logger.js';
+import { protect } from './middleware/auth.js';
+import authRoutes from './routes/authRoutes.js';
 import userRoutes from './routes/userRoutes.js';
 import { HTTP_STATUS, API_MESSAGES } from './config/constants.js';
 
@@ -38,7 +40,8 @@ app.get('/api/health', (req, res) => {
 });
 
 // API Routes
-app.use('/api/users', userRoutes);
+app.use('/api/auth', authRoutes);
+app.use('/api/users', protect, userRoutes);
 
 // ==================== ERROR HANDLING ====================
 
