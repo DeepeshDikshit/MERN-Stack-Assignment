@@ -5,6 +5,7 @@ import { logger } from './middleware/logger.js';
 import { protect } from './middleware/auth.js';
 import authRoutes from './routes/authRoutes.js';
 import userRoutes from './routes/userRoutes.js';
+import storyRoutes from './routes/storyRoutes.js';
 import { HTTP_STATUS, API_MESSAGES } from './config/constants.js';
 
 const app = express();
@@ -42,6 +43,7 @@ app.get('/api/health', (req, res) => {
 // API Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/users', protect, userRoutes);
+app.use('/api/stories', storyRoutes);
 
 // ==================== ERROR HANDLING ====================
 

@@ -37,7 +37,7 @@ const userSchema = new mongoose.Schema(
     bookmarks: [
       {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'Post', // Change to your post/article model
+        ref: 'Story',
       },
     ],
   },
