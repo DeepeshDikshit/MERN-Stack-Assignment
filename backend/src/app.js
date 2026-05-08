@@ -52,7 +52,7 @@ app.use('/api/users', protect, userRoutes);
 app.use('/api/stories', storyRoutes);
 
 // React frontend routes
-app.get('*', (req, res) => {
+app.get('/*', (req, res) => {
   res.sendFile(
     path.join(path.resolve(), 'public', 'index.html')
   );
