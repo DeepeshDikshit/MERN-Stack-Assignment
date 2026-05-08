@@ -1,11 +1,15 @@
 import express from 'express';
 import cors from 'cors';
+import path from 'path';
+
 import { errorHandler, AppError } from './middleware/errorHandler.js';
 import { logger } from './middleware/logger.js';
 import { protect } from './middleware/auth.js';
+
 import authRoutes from './routes/authRoutes.js';
 import userRoutes from './routes/userRoutes.js';
 import storyRoutes from './routes/storyRoutes.js';
+
 import { HTTP_STATUS } from './config/constants.js';
 
 const app = express();
@@ -27,6 +31,10 @@ app.use(
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ limit: '10mb', extended: true }));
 
+// ==================== STATIC FRONTEND ====================
+
+app.use(express.static(path.join(path.resolve(), 'public')));
+
 // ==================== ROUTES ====================
 
 // Health check endpoint
@@ -42,6 +50,13 @@ app.get('/api/health', (req, res) => {
 app.use('/api/auth', authRoutes);
 app.use('/api/users', protect, userRoutes);
 app.use('/api/stories', storyRoutes);
+
+// React frontend routes
+app.get('*', (req, res) => {
+  res.sendFile(
+    path.join(path.resolve(), 'public', 'index.html')
+  );
+});
 
 // ==================== ERROR HANDLING ====================
 
