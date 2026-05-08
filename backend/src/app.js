@@ -35,7 +35,7 @@ app.use(express.urlencoded({ limit: '10mb', extended: true }));
 
 app.use(express.static(path.join(path.resolve(), 'public')));
 
-// ==================== ROUTES ====================
+// ==================== API ROUTES ====================
 
 // Health check endpoint
 app.get('/api/health', (req, res) => {
@@ -51,24 +51,24 @@ app.use('/api/auth', authRoutes);
 app.use('/api/users', protect, userRoutes);
 app.use('/api/stories', storyRoutes);
 
-// React frontend routes
-app.get('/*', (req, res) => {
+// ==================== REACT FRONTEND ROUTES ====================
+
+app.use((req, res, next) => {
+  if (req.path.startsWith('/api')) {
+    return next(
+      new AppError(
+        `Route ${req.originalUrl} not found`,
+        HTTP_STATUS.NOT_FOUND
+      )
+    );
+  }
+
   res.sendFile(
     path.join(path.resolve(), 'public', 'index.html')
   );
 });
 
 // ==================== ERROR HANDLING ====================
-
-// 404 handler
-app.use((req, res, next) => {
-  next(
-    new AppError(
-      `Route ${req.originalUrl} not found`,
-      HTTP_STATUS.NOT_FOUND
-    )
-  );
-});
 
 // Global error handler
 app.use(errorHandler);
