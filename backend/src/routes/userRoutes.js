@@ -15,17 +15,17 @@ import {
 
 const router = express.Router();
 
-// User routes
-router.get('/', getAllUsers);
-router.get('/:id', getUserById);
-router.post('/', createUser);
-router.put('/:id', updateUser);
-router.delete('/:id', deleteUser);
-
-// Bookmark routes (protected by auth middleware in app.js)
-router.post('/bookmarks/:postId', addBookmark);
-router.delete('/bookmarks/:postId', removeBookmark);
+// Bookmark routes FIRST (specific routes before parameterized ones)
 router.get('/bookmarks', getBookmarks);
 router.get('/bookmarks/check/:postId', isBookmarked);
+router.post('/bookmarks/:postId', addBookmark);
+router.delete('/bookmarks/:postId', removeBookmark);
+
+// User routes (parameterized routes last)
+router.get('/', getAllUsers);
+router.post('/', createUser);
+router.get('/:id', getUserById);
+router.put('/:id', updateUser);
+router.delete('/:id', deleteUser);
 
 export default router;

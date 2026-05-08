@@ -1,6 +1,7 @@
 import User from '../models/User.js';
 import { catchAsyncErrors, AppError } from '../middleware/errorHandler.js';
 import { HTTP_STATUS } from '../config/constants.js';
+import mongoose from 'mongoose';
 
 // @desc    Add bookmark
 // @route   POST /api/users/bookmarks/:postId
@@ -15,9 +16,16 @@ export const addBookmark = catchAsyncErrors(async (req, res, next) => {
     );
   }
 
+  // Validate if postId is a valid ObjectId
+  if (!mongoose.Types.ObjectId.isValid(postId)) {
+    return next(
+      new AppError('Invalid post ID format', HTTP_STATUS.BAD_REQUEST)
+    );
+  }
+
   const user = await User.findByIdAndUpdate(
     userId,
-    { $addToSet: { bookmarks: postId } }, // $addToSet prevents duplicates
+    { $addToSet: { bookmarks: new mongoose.Types.ObjectId(postId) } },
     { new: true, runValidators: true }
   ).populate('bookmarks');
 
@@ -45,9 +53,16 @@ export const removeBookmark = catchAsyncErrors(async (req, res, next) => {
     );
   }
 
+  // Validate if postId is a valid ObjectId
+  if (!mongoose.Types.ObjectId.isValid(postId)) {
+    return next(
+      new AppError('Invalid post ID format', HTTP_STATUS.BAD_REQUEST)
+    );
+  }
+
   const user = await User.findByIdAndUpdate(
     userId,
-    { $pull: { bookmarks: postId } },
+    { $pull: { bookmarks: new mongoose.Types.ObjectId(postId) } },
     { new: true, runValidators: true }
   ).populate('bookmarks');
 
@@ -88,13 +103,21 @@ export const isBookmarked = catchAsyncErrors(async (req, res, next) => {
   const { postId } = req.params;
   const userId = req.userId;
 
+  if (!mongoose.Types.ObjectId.isValid(postId)) {
+    return res.status(HTTP_STATUS.OK).json({
+      success: true,
+      bookmarked: false,
+    });
+  }
+
   const user = await User.findById(userId);
 
   if (!user) {
     return next(new AppError('User not found', HTTP_STATUS.NOT_FOUND));
   }
 
-  const bookmarked = user.bookmarks.includes(postId);
+  const postObjectId = new mongoose.Types.ObjectId(postId);
+  const bookmarked = user.bookmarks.some((bid) => bid.equals(postObjectId));
 
   res.status(HTTP_STATUS.OK).json({
     success: true,

@@ -6,7 +6,7 @@ import { protect } from './middleware/auth.js';
 import authRoutes from './routes/authRoutes.js';
 import userRoutes from './routes/userRoutes.js';
 import storyRoutes from './routes/storyRoutes.js';
-import { HTTP_STATUS, API_MESSAGES } from './config/constants.js';
+import { HTTP_STATUS } from './config/constants.js';
 
 const app = express();
 
@@ -15,15 +15,13 @@ const app = express();
 // Request logging
 app.use(logger);
 
-// CORS configuration
-const corsOptions = {
-  origin: process.env.CORS_ORIGIN || 'http://localhost:3000',
-  credentials: true,
-  optionsSuccessStatus: 200,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
-  allowedHeaders: ['Content-Type', 'Authorization'],
-};
-app.use(cors(corsOptions));
+// CORS
+app.use(
+  cors({
+    origin: '*',
+    credentials: true,
+  })
+);
 
 // Body parser middleware
 app.use(express.json({ limit: '10mb' }));
@@ -47,12 +45,17 @@ app.use('/api/stories', storyRoutes);
 
 // ==================== ERROR HANDLING ====================
 
-// 404 Not Found handler
+// 404 handler
 app.use((req, res, next) => {
-  next(new AppError(`Route ${req.originalUrl} not found`, HTTP_STATUS.NOT_FOUND));
+  next(
+    new AppError(
+      `Route ${req.originalUrl} not found`,
+      HTTP_STATUS.NOT_FOUND
+    )
+  );
 });
 
-// Global error handler (must be last)
+// Global error handler
 app.use(errorHandler);
 
 export default app;

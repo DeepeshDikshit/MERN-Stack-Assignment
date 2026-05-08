@@ -1,0 +1,26 @@
+.story-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.empty-state {
+  background: white;
+  border: 1px solid #e8e8e8;
+  border-radius: 6px;
+  padding: 3rem 2rem;
+  text-align: center;
+  color: #666;
+  font-size: 1.1rem;
+}
+
+@media (max-width: 768px) {
+  .story-list {
+    gap: 0.75rem;
+  }
+
+  .empty-state {
+    padding: 2rem 1rem;
+    font-size: 1rem;
+  }
+}
